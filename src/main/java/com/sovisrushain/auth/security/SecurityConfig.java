@@ -4,7 +4,6 @@ import com.sovisrushain.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,16 +25,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(HttpMethod.GET, "/heroes/**").authenticated();
-                    auth.anyRequest().authenticated();
-                })
-                .httpBasic()
+        return http.csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/auth/**").permitAll()
                 .and()
-                .build();
+                .authorizeHttpRequests().requestMatchers("/heroes/**")
+                .authenticated().and().formLogin().and().build();
+
     }
 
     @Bean
