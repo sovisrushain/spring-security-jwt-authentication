@@ -25,10 +25,12 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         String token = getJWTFromRequest(request);
-        if(StringUtils.hasText(token) && tokenGenerator.validationToken(token)) {
-            String username = tokenGenerator.getUserNameFromJWT(token);
+        if(StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
+            String username = tokenGenerator.getUsernameFromJWT(token);
 
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,

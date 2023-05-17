@@ -1,5 +1,6 @@
 package com.sovisrushain.auth.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -11,34 +12,33 @@ import java.util.Date;
 @Component
 public class JWTGenerator {
     public String generateToken(Authentication authentication) {
-        String name = authentication.getName();
+        String username = authentication.getName();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
 
-        return Jwts.builder()
-                .setSubject(name)
-                .setIssuedAt(currentDate)
+        String token = Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET)
                 .compact();
+        return token;
     }
 
-    public String getUserNameFromJWT(String token) {
-        return Jwts.parser()
+    public String getUsernameFromJWT(String token) {
+        Claims claims = Jwts.parser()
                 .setSigningKey(SecurityConstants.JWT_SECRET)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        return claims.getSubject();
     }
 
-    public boolean validationToken(String token) {
+    public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .setSigningKey(SecurityConstants.JWT_SECRET)
-                    .parseClaimsJws(token);
+            Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET).parseClaimsJws(token);
             return true;
-        }catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect!");
+        } catch (Exception ex) {
+            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect");
         }
     }
 }
