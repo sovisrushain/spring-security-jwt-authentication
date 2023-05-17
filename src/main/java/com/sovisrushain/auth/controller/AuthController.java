@@ -1,11 +1,13 @@
 package com.sovisrushain.auth.controller;
 
+import com.sovisrushain.auth.dto.AuthResponseDTO;
 import com.sovisrushain.auth.dto.LoginDTO;
 import com.sovisrushain.auth.dto.RegisterDTO;
 import com.sovisrushain.auth.model.Role;
 import com.sovisrushain.auth.model.UserEntity;
 import com.sovisrushain.auth.repository.RoleRepository;
 import com.sovisrushain.auth.repository.UserRepository;
+import com.sovisrushain.auth.security.JWTGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTGenerator jwtGenerator;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) {
@@ -48,12 +51,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(),
                 loginDTO.getPassword()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User Signed Successfully!", HttpStatus.OK);
+        String token = jwtGenerator.generateToken(authentication);
+        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
     }
 }
