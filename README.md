@@ -26,3 +26,11 @@ The default Spring Security Filter Chain typically includes the following filter
 These are just a few examples, and the actual filter chain can vary depending on the specific configuration of your application. Additionally, you can customize the filter chain by adding or removing filters according to your application's requirements.
 
 By configuring and customizing the Spring Security Filter Chain, you can control how requests are processed and secured in your application, enabling you to implement various security features and mechanisms to protect your application's resources.
+
+### User Details Service
+
+Pulls UserDetail from the Database.
+![alt text](./assets/sectwo.png)
+
+### Users and Roles
+![alt text](./assets/secthree.png)
